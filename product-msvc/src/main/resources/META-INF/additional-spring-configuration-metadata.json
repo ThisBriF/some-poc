@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "kafka.topic",
+    "type": "java.lang.String",
+    "description": "This property refers to the topic where the Product microservice will send messages to."
+  }
+]}

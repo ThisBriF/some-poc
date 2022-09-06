@@ -1,0 +1,160 @@
+openapi: 3.0.0
+
+info:
+  title: Some POC App
+  version: 1.0.0
+  contact:
+    name: Matthew Eric Hill
+    email: matthew.hill@collabera.com
+  description: >-
+    A sample POC app that contains multiple microservices.
+
+
+    The Product microservice required by sample POC app. It is expected to be
+    list, add, and book products via its exposed REST API. This microservice
+    will be connected to and interact with a MySQL database via Spring Data JPA
+    (Hibernate), and also be equipped to broadcast all activities via Apache
+    Kafka.
+
+paths:
+  /products:
+    get:
+      summary: Get all products
+      description: Retrieves all registered products in the poc.products MySQL database.
+      parameters: []
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: Successful retrieval of all products.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productCollectionSchema'
+      tags:
+        - product
+    post:
+      summary: Add a product
+      description: Adds a product to the database.
+      parameters: []
+      operationId: addProduct
+      responses:
+        '200':
+          description: Successful product addition.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productSchema'
+      tags:
+        - product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/productSchema'
+        description: Request must contain a valid product representative JSON.
+    put:
+      summary: Add or replace a product
+      description: Adds or replace a product in the database.
+      responses:
+        '200':
+          description: Successful production addition/replacement.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productSchema'
+      tags:
+        - product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/productSchema'
+        description: Request must contain a valid product representative JSON.
+      parameters: []
+      operationId: addOrRepalceProduct
+  '/products/{productId}':
+    get:
+      summary: Retrieve a specific product
+      description: Will pull a single product with given productId.
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of product to retrieve
+      operationId: getProduct
+      responses:
+        '200':
+          description: Successful single product retrieval.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productSchema'
+      tags:
+        - product
+
+  /carts:
+    get:
+      summary: Get all carts
+      description: Retrieves all carts in the poc.carts MySQL database.
+      parameters: []
+      responses:
+        '200':
+          description: Successful retrieval of all carts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cartSchema'
+      tags:
+        - cart
+
+servers:
+  - url: 'http://localhost:8081'
+    description: hosted in a Docker container
+
+components:
+  schemas:
+    productSchema:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        brand:
+          type: string
+      required:
+        - name
+        - description
+        - price
+        - brand
+    productCollectionSchema:
+      type: array
+      items:
+        $ref: '#/components/schemas/productSchema'
+    cartSchema:
+      type: object
+      properties:
+        cartid:
+          type: integer
+        products:
+          $ref: '#/components/schemas/productCollectionSchema'
+    cartCollectionSchema:
+      type: array
+      items:
+        $ref: '#/components/schemas/cartSchema'
+
+tags:
+  - name: product
+    description: product microservice
+  - name: cart
+    description: cart microservice
+  - name: user
+    description: user microservice
