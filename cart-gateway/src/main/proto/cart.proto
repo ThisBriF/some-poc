@@ -15,18 +15,18 @@ message AllCartsRequest {
 
 }
 
-message CartRequest {
+message CartGrpcRequest {
     int32 cartId = 1;
 }
 
-message CartRequestCollection {
-    repeated CartRequest carts = 1;
+message CartGrpcRequestCollection {
+    repeated CartGrpcRequest carts = 1;
 }
 
 service HelloService {
     rpc hello(HelloRequest) returns (HelloResponse);
 }
 
-service GetAllCartsService {
-    rpc getCarts(AllCartsRequest) returns (CartRequestCollection);
+service GetAllCartsGrpcService {
+    rpc getCarts(AllCartsRequest) returns (CartGrpcRequestCollection);
 }

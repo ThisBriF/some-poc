@@ -1,45 +1,40 @@
 package ph.matt.cartservice.service;
 
-import io.grpc.stub.StreamObserver;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ph.matt.cart.AllCartsRequest;
-import ph.matt.cart.CartRequest;
-import ph.matt.cart.CartRequestCollection;
-import ph.matt.cart.GetAllCartsServiceGrpc;
-import ph.matt.cartservice.mapper.CartMapper;
+import ph.matt.cart.CartGrpcRequest;
+import ph.matt.cart.CartGrpcRequestCollection;
 import ph.matt.cartservice.model.CartModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
-@NoArgsConstructor
-@AllArgsConstructor
-public class CartServiceImpl extends GetAllCartsServiceGrpc.GetAllCartsServiceImplBase {
+@Service
+public class CartServiceImpl {
 
-    private CartMapper cartMapper;
+    public CartGrpcRequestCollection getCarts(AllCartsRequest request) {
+        log.info("Received AllCartsRequest: {}", request);
 
-    @Override
-    public void getCarts(AllCartsRequest request, StreamObserver<CartRequestCollection> responseObserver) {
-        log.info("Received request: {}", request);
+        // List<CartModel> results = cartMapper.getAllCarts();
+        List<CartModel> results = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            CartModel cartModel = new CartModel();
+            cartModel.setId(i);
+            results.add(cartModel);
+        }
 
-        List<CartModel> results = cartMapper.getAllCarts();
-
-        CartRequestCollection.Builder responseBuilder = CartRequestCollection.newBuilder();
+        CartGrpcRequestCollection.Builder responseBuilder = CartGrpcRequestCollection.newBuilder();
 
         for (int i = 0; i < results.size(); i++) {
-            CartRequest cartRequest = CartRequest.newBuilder()
+            CartGrpcRequest cartRequest = CartGrpcRequest.newBuilder()
                     .setCartId(results.get(i).getId())
                     .build();
             responseBuilder.addCarts(i, cartRequest);
         }
 
-        CartRequestCollection response = responseBuilder.build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        return responseBuilder.build();
     }
 
 }
